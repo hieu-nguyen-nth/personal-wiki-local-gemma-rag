@@ -1,0 +1,10 @@
+.wiki-data/
+.venv
+models
+outputs/
+work/
+evidence/screenshots/drafts/
+vault/.obsidian/workspace.json
+.DS_Store
+__pycache__/
+*.pyc

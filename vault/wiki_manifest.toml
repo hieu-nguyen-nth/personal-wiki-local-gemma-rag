@@ -1,0 +1,7 @@
+[[pages]]
+source = "raw/Product Management Is Dead, So What Are We Doing Instead?.md"
+target = "wiki/AI and Product/AI-Powered Product Teams.md"
+title = "AI-Powered Product Teams"
+description = "How AI changes product work, team shape, and the activities product managers should automate."
+related = ["AI-First Product Management", "Product Leadership Archetypes"]
+

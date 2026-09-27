@@ -1,0 +1,280 @@
+
+- date: 2025-04-09
+- source: 
+- tag: #neuralnetworks
+- context:
+## Neural Networks 
+- neurons and the brain - neural network intuitions
+	- algorithms that try to mimic the brain
+	- intro about the neurons and the brain for ideas on neural networks -> neural network = simulate multiple neurons and layers at a times, with the output of each neuron maybe the input of another neuron
+	- samples of handling layers of neural networks from several input!
+	- ![[Pasted image 20250409232849.png]]
+	- What the neural network does is instead of you needing to manually engineer the features,  it can learn, it should compute instead or figure out all by itself what are the features it wants to use in this hidden layer.
+	- to think: architecture: choosing the right number of hidden layers and number of hidden units per layer can have an impact on the performance of a learning algorithm
+- neural networks model
+	- there may be multiple layers of neural networks
+	- ![[Pasted image 20250410000952.png]]
+	- how a neural network works. Every layer inputs a vector of numbers and applies a bunch of logistic regression units to it, and then computes another vector of numbers that then gets passed from layer to layer until you get to the final output layers computation, which is the prediction of the neural network. Then you can either threshold at 0.5 or not to come up with the final prediction
+	- counting layers: include output + hidden, not consider input as layer 0, veri detail & technical for a person to learn
+- tensorflow implementation 
+	- tensorflow as an option to implement code, and one algorithm / neural networks can be applied to handle multiple problems 
+		- ![[Pasted image 20250412182114.png]]
+	- how data in tensorflow
+		- numpy is different from tensorflow btw, matrix is just 2d array of numbers. with ny, each [] create a row of matrix, so need to handle carefully to make sure that things are clear
+		- ![[Pasted image 20250412182708.png]]
+		- for tensorflow, tensor is a way to represent matrix in different format
+		- ![[Pasted image 20250412182939.png]]
+	- building neural networks in tensorflow
+		- sample, create layers, then model is using sequential(layer 1, layer 2) and use it to form a neural network architecture, pretty technical so imma skip from it 
+		- ![[Pasted image 20250412183953.png]]
+- neural network inplementation in python
+	- lots of technical tthings and formula, to consider later, need concept
+	- include forward prop in python and others, including hard code 
+	- also has a chapter for vectorize, but techncial so take a look only
+- is there a path to AGI is long and exciting, while AI include
+	- ANI (narrow) - specific task, smart speaker, web search, AI in factories and farming, self-driving car
+	- AGI (general) - do anything a human can do
+
+## Neural Network Training
+- seems to be pretty technical and concept -> goals is to get enough info on new concept for understanding, also link to advanced model section from [[crash course on ML from google]]
+- Neural Network Training
+	- training with tensorflow (stack) with model training steps
+		- step 1: specify the model
+		- step 2: compile the model, eg define loss and cost function
+		- step 3: train the model, eg define the fit model, epoch as number of training times (include the learning rate, gradient descent)
+	- ![[Pasted image 20250415231509.png]]
+- Activation Functions
+	- if you use other activation functions than sigmoid, your neural network can become much more powerful -> select the proper function, such as ReLU or linear activation function (similar to the [[crash course on ML from google]]
+	- choosing activation function for different neuron in network: depending on the label there will be one common choice
+		- for the output label
+			- binary classification problem -> sigmoid activation function
+			- regression problem, such as when the output be up or down for both positive or negative value -> linear activation function
+			- regression: when y can only take on positive value -> ReLU
+		- for hidden layer: ReLU = most common choice because it train faster (max 0, z but not exponentiation and )
+	- why do we need activation function
+		- if we were to use a linear activation function for all of the nodes in this neural network -> It turns out that this big neural network will  become no different than just linear regression.  So this would defeat the entire purpose of using a neural network because it would then just not be able to fit anything more complex than the linear regression model 
+- Multiclass Classification
+	- softmax: binary classification in the multiclass scenario similarly mentioned to [[crash course on ML from google]]
+	- sample of softmax, the sum of all equal to 1, the content refer to real formula to understand ![[Pasted image 20250417223943.png]]
+	- neural network with softmax output, eg if you want 10 classes, so you need the netwrok for 10 output units and a softmax output layer
+		- so you will have estimate for all 10 labels, and then based on it to make decision
+		- also a guide on handle in tensorflow, pretty complication code for implementation
+		- also more note on implement with tensorflow with improved implementation
+	- another type: 1 output with multiple label
+		- eg detect bus, person, car in 1 picture
+		- way: 3 separate ML or 1 neutral with 3 nodes in the output layer
+- Additional Concept
+	- Gradient descent is an optimization algorithm that is widely used in machine learning, and was the foundation of many algorithms like linear regression and logistic regression and early implementations of neural networks -> reduce the cost
+	- more algorithm for optimization: Adam stands for Adaptive Moment Estimation,  the Adam algorithm doesn't use a single global learning rate Alpha. It uses a different learning rates for every single parameter of your mode
+	- advanced layer types
+		- dense layer: the activation of a neuron in say the second hidden layer Is a function of every single activation value from the previous layer of a one
+		- convolutional layer: hidden layer which will compute different activations as functions of this input image X and each neuron only looks at part (or region) of the previous layer' output
+			- it speeds up computation
+			- need less training data (less prone to overfitting)
+		- multiple convolutional layers in a neural network -> a convolutional neural network, so you have multiple architecture choices
+			- even LS TM or transformer to invent new types of layers for neural networks
+			- ![[Pasted image 20250417235247.png]]
+- Back Propagation (optional)
+
+## Advice for applying machine learning
+- Advice for applying machine learning
+	- Decide what to do
+		- Debugging a learning algorithm, some options including
+			- get more training data
+			- try smaller sets of features
+			- try getting additional features
+			- try adding polynomial features (mũ bậc cao)
+			- try decreasing the regularization rate lambda
+			- try increasing the regularization rate lambda
+		- so carry out a set of diagnostic wil save time for later
+	- Evaluating a model
+		- split the training set into subset: training set + test set
+		- train the model on the training set with cost evaluation to select the better performance and test in test set 
+			- and there are several steps in test to handle evaluation![[Pasted image 20250418234158.png]]
+			- ![[Pasted image 20250418234907.png]]
+			- another option, instead of using the logistic loss to compute the test error and the training error to instead measure what the fraction of the test set, and the fraction of the training set that the algorithm has misclassified.
+		- Model selection and training/cross validation/test sets
+			- model selection: may consider multiple polynomial model to compare and select the most optimize one with lowest cost, however, it maybe too overoptimistic for the generalization
+			- the approach: split into training, cross validation and test set
+				- e cross-validation refers to that this is an extra dataset that we're going to use to check or cross check the validity or really the accuracy of different models -> training param
+				- n order to choose a model, you will look at which model has the lowest cross-validation error -> choose polynomial
+				- report out an estimate of the generalization error of how well this model will do on new data - use test set -> no influence of previous training -> fair estimation
+			- -> approach, make decision on training and cross validation, after all the training, test it on the test set -> widely used procedure
+- Bias and Variance
+	- Diagnosing diagnosis bias and variance for performance evaluation
+		- ![[Pasted image 20250419171403.png]]
+	- Regularization and bias/variance also in [[crash course on ML from google]]
+		- the choice of the regularization parameter Lambda affects the bias and variance and therefore the overall performance of the algorithm
+		- cross validation is also a good way to select proper lambda
+			- Lambda is an overloaded term. Here we're focusing on the term's definition within [**regularization**](https://developers.google.com/machine-learning/glossary#regularization).
+			- A number that specifies the relative importance of [**regularization**](https://developers.google.com/machine-learning/glossary#regularization) during training. Raising the regularization rate reduces [**overfitting**](https://developers.google.com/machine-learning/glossary#overfitting) but may reduce the model's predictive power. Conversely, reducing or omitting the regularization rate increases overfitting.
+			- ![[Pasted image 20250419172011.png]]
+	- Establishing a baseline level of performance
+		- what is the level of error you can reasonably hope to get to, eg on
+			- human level performance
+			- competing algorithm performance
+			- guess based on experience
+		- based on the gap between baseline vs training -> high bias or not, and gap between training and cross validation -> high variance or not
+	- Learning curves
+		- show the learning curves (error by training set size) of cases such as high bias, high variance and the path of human level performance
+			- high bias: getting more data won't help as it get over human level performance
+			- high variance: increase the training data might help to get to the desired performance line
+			- however it is computationally quite expensive to train so many different models using different size subsets of your training set, so in practice, it isn't done that often ![[Pasted image 20250419175915.png]]
+	- Deciding what to try next
+		-  looking at J train and Jcv, that is the training error and cross-validation error, or maybe even plotting a learning curve. -> get a sense of your learning algorithm has high bias or high variance
+		- High variance (overfitting) - get more data or simplify model
+			- get more training data
+			- try smaller sets of features
+			- try increasing the regularization rate lambda
+		- High bias (underfitting)
+			- try getting additional features
+			- try adding polynomial features (mũ bậc cao)
+			- try decreasing the regularization rate lambda
+	- Bias/variance and neural networks
+		- large neural networks are low bias machine 
+			- ![[Pasted image 20250419182839.png]]
+		- a large neural network will usually do better than a smaller one so long as regularization is chosen appropriately 
+- ML development process and tactics
+	- iterative loop of ML development
+		- choose architecture (model, data, etc) -> train model -> diagnostics (bias, variance and error analysis) and repeat
+		- the path to fix may very varied based on the problem, no one-size fit all solutions to handle each issue of each model (eg collect more, tweak it, etc)
+	- Error analysis
+		- error analysis process just refers to manually looking through these misclassified/predicted examples and trying to gain insights into where the algorithm is going wrong
+			- find issues and group into groups, and handle each issues, sample inlcude find more data in specific fields, or prioritize
+		- one limitation of error analysis is that it's much easier to do for problems that humans are good at
+	- Adding data tips
+		- tempting: add more data of everything 
+		- -> better: add more data of the types where error analysis has indicated it may help
+		- -> data augmentation (eg for video and image) - modify an existing training example to create a new training example
+			- eg distortion for letter A (even wavy, flip it or else)![[Pasted image 20250419194716.png]]
+			- ![[Pasted image 20250419194927.png]]
+			- One tip for data augmentation is that the changes or the distortions you make to the data, should be representative of the types of noise or distortions in the test set.
+		- data synthesis - you make up brand new examples from scratch, such as handle multiple text from text generation with different font and color -> helpful with OCR image
+		- engineering the data used by your system
+			- conventional model-centric approach AI = Code + Data -> people work on code things to optimize it
+			- as many algorithms are good -> use data-centric approach which focusing on engineering the data (collect more data, collect more specific data, create data argumentation or synthesis)
+	- transfer learning: using data from a different task
+		- a bit more complex: use the result of another training items and bring the parameters to adjust 
+		- transfer learning because the intuition is by learning to recognize cats, dogs, cows, people, and so on. It will hopefully, have learned some plausible sets of parameters for the earlier layers for processing image inputs. Then by transferring these parameters to the new neural network, the new neural network starts off with the parameters in a much better place so that we have just a little bit of further learning. Hopefully, it can end up at a pretty good model. 
+		- These two steps of first training on a large dataset and then tuning the parameters further on a smaller dataset go by the name of supervised pre-training for this step on top. 
+		- maybe you don't need to be the one to carry out supervised pre-training. For a lot of neural networks, there will already be researchers they have already trained a neural network on a large image and will have posted a trained neural networks on the Internet, freely licensed for anyone to download and use
+			- ![[Pasted image 20250419200251.png]]
+			- why does it work ![[Pasted image 20250419201527.png]]
+		- summary steps (help when your dataset is not that large)
+			- Step 1 is download neural network with parameters that have been pre-trained on a large dataset with the same input type as your application (use pre-trained parameter)
+			- Then further train or fine tune the network on your own data.
+	- full cycle of a machine learning project
+		- step 1: scope project
+		- step 2: define and collect data
+		- step 3: train model: training, error analysis and iterative improvement (back to the collect data)
+		- step 4: deploy in production, monitor and maintain system (and may go back to train or collect more data to make its performance better)
+			- ![[Pasted image 20250419225509.png]]
+	- fairness, bias and ethics
+		- lots of issues with fairness and bias (eg hiring women) -> as someone who may use ML, be noticed on those issue
+		- guideline to avoid
+			- get a diverse team to brainstorm things that night go wrong, with emphasis on possible harm to vulnerable groups
+			- carry out literature search on standards/guidelines for your industry
+			- audit systems against possible harm prior to deployment
+			- development mitigation plan (if applicable) and after deployment, monitor possible harm
+				- For example, all of the self driving car teams prior to rolling out self driving cars on the road had developed mitigation plans for what to do in case the car ever gets involved in an accident so that if the car was ever in an accident, there was already a mitigation plan that they could execute immediately
+- Skewed datasets
+	- error metrics for skewed datasets
+		- the usual error metrics like accuracy don't work that well on skewed dataset, eg 99% correct on rare diseased, but it has always been that
+		- -> a common pair of error metrics are precision and recall, and also the confusion matrix to evaluate 
+			- precision: among all predicted, what fraction actually true
+				- true positive / predicted positive (true positive + false positive)
+			- recall: among all needed to be predicted, what faction actually predicted by the model 
+				- true positive / actual positive (true positive + false negative)
+	- trading of precision and recall
+		- recall precision is the number of true positives divided by the total number that was predicted positive, and recall is the number of true positives divided by the total actual number of positives.
+		- in practice there's often a trade-off between precision and recall -> select the threshold based on impact on other business metrics and goals  of implementing the model
+			- ![[Pasted image 20250419233432.png]]
+		- another metrics: F1 score to combine precision and recall into a single score and select the appropriate threshold, use the formula to avoid when P or R is extremely small
+			- ![[Pasted image 20250419233831.png]]
+## Decision Tree
+- Decision trees
+	- definition
+		- model of multiple nodes based on the decision and branches from the root node to other following decision nodes before coming to the prediction (leaf nodes)
+			- ![[Pasted image 20250420183746.png]]
+	- learning process
+		- decide the root node -> split into groups, then choose other decision note (feature) to consider and move to next steps
+	- key decisions to make
+		- How to choose what feature to split on at each node? (idea of goal: maximize purity / minimize impurity)
+		- When do you stop splitting? ^a19a05
+			- when a node is 100% one class
+			- when splitting a node further will result in the tree exceeding a maximum depth (max depth = configurable, with root = depth 0)
+			- when improvement in purity score are below a threshold  
+			- when number of examples in a node is below a threshold
+				- other things = result of researcher to refine the algorithm 
+- Decision tree learning
+	- Measuring purity
+		- entropy as a measure of impurity, the highest when the example is 50/50 and lowest when the example is full of one class only
+			- formula H(p1) = -p1 log2(p1) - p0log2(p0) with p0 = 1-p1 ![[Pasted image 20250420231554.png]]
+		- chose a split: information gain
+			- which feature will reduce entropy the most (or information gain)
+			- calculate entropy of each option. take the average of entropy to select (include the weighted average) and pick the lowest
+				- ![[Pasted image 20250420232531.png]]
+				- or another option: calculate the reduction in entropy after split (as the root note equal to 1 - entropy so low entropy equal to high reduction, or information gain)
+					- using the reduction in entropy also is an option to make decision on make more split or not (below threshold)
+					- ![[Pasted image 20250420232906.png]]
+			- formula to calculate information gain associate with possibility
+				- ![[Pasted image 20250420233127.png]]
+		- putting it together
+			- decision tree learning
+				- Starts with all training examples at the root node of the tree 
+				- Calculate the information gain for all possible features and pick the feature to split on gives the highest information gain. 
+				- you would then split the dataset into two subsets according to the selected feature, and create left and right branches of the tree and send the training examples to either the left or the right branch,  depending on the value of that feature for that example. 
+				- keep on repeating the splitting process on the left branch of the tree, on the right branch of the tree and so on until the stopping criteria is met as in [[Advanced Machine Learning - Neural Networks Inference#^a19a05]]
+			- recursive algorithm
+				- the way you build a decision tree at the root is by building other smaller decision trees in the left and the right sub-branches. 
+				- Recursion in computer science refers to writing code that calls itself. The way this comes up in building a decision tree is you build the overall decision tree by building smaller sub-decision trees and then putting them all together.
+			- higher depth = polynomial + risk of overfitting
+		- use one-hot encoding of categorical features
+			- when feature can takes on more than 2 values, so you can use one hot encoding (new features with 2 values, such as )
+			- if a categorical feature can take on k possible values, then we will replace it by creating k binary features that can only take on the values 0 or 1.
+			- ![[Pasted image 20250420234212.png]]
+			- also may be use for neural network which takes number as input![[Pasted image 20250420234435.png]]
+		- continued values
+			- instead of handle each values is the same, splitting on one value at a time, and multiple times and calculate entropy based on the splitting so select the best
+			- eg have 10 training example -> test 9 times
+		- regression trees
+			- eg in the example, regression is prediction an amount not category -> grouping -> prediction based on the average of group
+			- ![[Pasted image 20250420235140.png]]
+			- in decision tree x decision tree, instead of trying to reduce entropy, focus on reducing the variance, thus has to calculate weighted average variance and reduction in variance 
+			- choosing the largest reduction in variance![[Pasted image 20250420235524.png]]
+- Tree ensemble
+	- using multiple decision trees
+		- tree are highly sensitive to small changes of data -> multiple decision trees (tree ensembles) and let them to vote -> better overall algorithm
+			- ![[Pasted image 20250420235947.png]]
+	- sampling with replacement
+		- conduct several random training sets that's a bit similar to the original with the same size of sample (may repeat) and different
+			- ![[Pasted image 20250421000248.png]]
+	- random forest algorithm
+		-  tree ensamble algorithm that works much better than using a single decision tree.
+			- B rec from 64 to 128, larger may have diminishing return![[Pasted image 20250421000448.png]]
+		- randomizing the feature choice
+			- at each node, when choosing a feature to use to split, if n features are available, pick a random subset of k < n features and allow the algorithm to only choose from that subset of features
+			- k may be square root of n -> make it random and more robust 
+	- XGBoost - boosted decision tree
+		- idea: focus on the misclassified, in every time after the first time, when choosing sample with replacement to create a new training set
+			- instead of picking from all examples with equal (1/m) probability, make it more likely to pick misclassified examples from previously trained trees
+			- ![[Pasted image 20250421001405.png]]
+		- XGBoost - extreme gradient boosting
+			- the most widely used one today - an open source implementation of boosted trees that is very fast and efficient. 
+				- ![[Pasted image 20250421001705.png]]
+			- has a good choice of the default splitting criteria and criteria for when to stop splitting. 
+			- has built in regularization to prevent overfitting
+			- in machine learning competitions - highly competitive
+	- When to use decision tree
+		- compare to think about when to use decision trees vs neural networks
+		- decision tree vs tree ensembles
+			- works well on tabular (structured) data
+			- not recommended for unstructured data (image, audio, text)
+			- fast
+			- small decision trees maybe human interpretable
+			- normally go for ensembles, but it can be more expensive -> when under budget constraint, use single tree
+		- neural networks
+			- works well on all types of data, including tabular (structured) and unstructured data
+			- May be slower than a decision tree
+			- works with transfer learning (small data set and use pre-training is more competitive)
+			- when building a system of multiple models working together, it may be easier to string together multiple neural networks

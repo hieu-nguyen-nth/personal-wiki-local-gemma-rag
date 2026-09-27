@@ -1,0 +1,7 @@
+vault = "vault"
+model = "models/gemma4-e2b-it-local"
+data_dir = ".wiki-data"
+top_k = 5
+max_context_chars = 12000
+max_tokens = 320
+chat_max_tokens = 520

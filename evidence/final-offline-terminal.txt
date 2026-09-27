@@ -1,0 +1,253 @@
+FINAL OFFLINE DEMONSTRATION
+Started: 2026-09-27T02:06:14Z
+Network: Wi-Fi Power (en0): Off
+Model path: "/Users/hieunguyen/Documents/Codex/2026-09-22/build-and-run-a-local-terminal/models/gemma4-e2b-it-local"
+Runtime: local MLX via launch.command
+
+== Memory before ==
+System-wide memory free percentage: 64%
+Archived prior generated index: work/index-before-final-offline.sqlite3
+
+== Help after fresh CLI start ==
+usage: wiki [-h] [--config CONFIG] {chat,ask,search,ingest,help} ...
+
+Offline personal-wiki CLI powered by local Gemma and local retrieval.
+
+positional arguments:
+  {chat,ask,search,ingest,help}
+    chat                Conversational assistant; wiki lookup is opt-in
+    ask                 Standalone evidence-only answer with citations
+    search              Return original passages and paths; no generation
+    ingest              Idempotently index Markdown/text sources
+    help                Show command help
+
+options:
+  -h, --help            show this help message and exit
+  --config CONFIG       Path to wiki_config.toml
+
+== Fresh local ingestion ==
+Scanned 15 files: 15 updated, 0 unchanged, 0 removed; wrote 88 new chunks.
+        0.06 real         0.04 user         0.01 sys
+            24379392  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                2547  page reclaims
+                 129  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  32  voluntary context switches
+                  50  involuntary context switches
+           499675150  instructions retired
+           187535999  cycles elapsed
+            13731008  peak memory footprint
+
+== Duplicate-safety re-ingestion ==
+Scanned 15 files: 0 updated, 15 unchanged, 0 removed; wrote 0 new chunks.
+
+== Raw source search; no Gemma call ==
+[1] raw/Unsupervised Learning.md — Week 2 - Recommender systems
+score=11.395392
+- the retrieval step (focus on coverage) will generate a large list of plausible item candidates. That tries to cover a lot of possible things you might recommend to the user and it's okay during the retrieval step. If you include a lot of items that the user is not likely to like, remember removing duplicates or no value items 			- during the ranking step will fine tune and pick the best items to recommend to the user,[attachment: Pasted image 20250504153007.png] 		- Special notes for retrieval: how many items to consider? - During the retrieval step, retrieving more items will tend to result in better performance. But the algorithm will end up being slower ->  recommend carrying out offline experiments to see how much retrieving additional items results in more relevant recommendations. [attachment: Pasted image 20250504153242.png] 	- ethical use of recommender systems 		- need to choose the goal of the rec system, some are helpful, some (eg last 3) are not[attachment: Pasted image 20250504153521.png] 	- TensorFlow implementation of content-based filtering[attachment: Pasted image 20250504154533.png] - Principal Component Analysis (optional, may not go) - **to check later** 	- Reducing the number of features to visualize it 		- to find one or more new axes, such as z so that when you measure your datas coordinates on the new axis, you end up still with very useful information
+
+[2] raw/Unsupervised Learning.md — Week 2 - Recommender systems
+score=8.287623
+- limitations of collaborative filtering 			- cold star problem, eg how to 				- rank new items that few users have rated 				- show something reasonable to new users who have rated few items 			- use side information about items or users 				- item: genre, movie stars, studio,.. - user: demographics (age, gender, location,..), expressed preferences - Content-based filtering 	- collaborative filtering vs content-based filtering 		- collaborative filtering, the general approach is that we would recommend items to you based on ratings of users who gave similar ratings as you. - content-based filtering: recommend items to you based on features of users and items to find a good match [attachment: Pasted image 20250504150946.png] 		- learning to match and calculate based on features -> compute these vectors, v_u for the users and v_m for the items over the movies, and then take dot products between them to try to find good matches. [attachment: Pasted image 20250504151359.png] 	- deep learning for content-based filtering 		- network architecture as follow with cost function and optimization to fine-tune th emodel [attachment: Pasted image 20250504151930.png] [attachment: Pasted image 20250504151739.png] 		- not only for joint prediction, movies and users can also be used independently to find similar thing, and performance can be optimized by pre-computed [attachment: Pasted image 20250504152227.png] 	- recommending from a large catalogue - to scale 		- two steps which are called the retrieval and ranking steps
+
+[3] raw/Unsupervised Learning.md — Week 2 - Recommender systems
+score=5.437384
+This allows for serendipitous recommendations; that is, collaborative filtering models can recommend an item to user A based on the interests of a similar user B. Furthermore, the embeddings can be learned automatically, without relying on hand-engineering of features. - binary labels, favs, likes, clicks - linear to logistics 		- use case of binary filter, not guesting values [attachment: Pasted image 20250427233827.png] 		- Details of models [attachment: Pasted image 20250427234030.png] [attachment: Pasted image 20250427234253.png] - Recommender systems implementation detail 	- mean normalization 		- mean normalization - you normalize the movie ratings (or the value used for prediction) to have a consistent average value 		- steps 			- calculate the mean (normalize the row as in example - new user, or can also normalize the column - new movie - nếu guess dòng thì normalize cột và ngược lại), then substract from original [attachment: Pasted image 20250504142859.png] 			- for usr j movie i predict by using formular and also include the average (muy - subtract previously) [attachment: Pasted image 20250504143026.png] 			- 	- tensorflow implementation of collaborative filtering 			- pretty technical in terms of implementation, but the idea is that tensorflow can automatically calculate derivative of cost function without calculus knowledge - auto diff [attachment: Pasted image 20250504143558.png][attachment: Pasted image 20250504144410.png] 	- finding related items 		- find the item with similar feature [attachment: Pasted image 20250504144818.png]
+
+[0.00s]
+Saved: /Users/hieunguyen/Documents/Codex/2026-09-26/help-me-build-assignment-4-for/.wiki-data/runs/20260927T020614Z-search.json
+
+== Ask 1: K-means ==
+K-means alternates between two operations: assigning each data point to its nearest centroid and moving each centroid to the mean of its assigned examples [1]. The second operation involves recomputing the centroid by taking the average of all the points assigned to it, and then moving the centroid [2].
+
+Initialization of K-means involves randomly picking $k$ training examples to set as the starting centroids [2]. Repeating initialization is recommended because different initial centroids can result in different local optima [1]. If one initializes K-means with different starting points, it may end at a local minimum [2]. Therefore, repeating the initialization allows for multiple attempts to find the best local optimum [2].
+
+Evidence paths:
+[1] wiki/Machine Learning/Clustering and Anomaly Detection.md — Clustering and Anomaly Detection
+[2] raw/Unsupervised Learning.md — Week 1 - Unsupervised Learning
+
+[9.32s]
+Saved: /Users/hieunguyen/Documents/Codex/2026-09-26/help-me-build-assignment-4-for/.wiki-data/runs/20260927T020623Z-ask.json
+        9.58 real         4.39 user         2.42 sys
+           834813952  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              247330  page reclaims
+                1659  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                4568  voluntary context switches
+               47326  involuntary context switches
+         38417664315  instructions retired
+         15800819768  cycles elapsed
+          3818938816  peak memory footprint
+
+== Ask 2: recommender retrieval and ranking ==
+Retrieval and ranking are two steps in a production recommender system [1][3]. Retrieval is the step that gathers a large list of plausible item candidates [2]. This step focuses on coverage, aiming to cover many possible recommendations for the user [2].
+
+The ranking step follows retrieval and fine-tunes the results to select the best items to recommend to the user [2]. While retrieving more items can lead to better performance, it increases computation, so this tradeoff should be tested [1].
+
+In the context of content-based filtering, which involves calculating vectors for users and items to find matches [3], the process is often described as two steps: retrieval and ranking, especially when recommending from a large catalog to scale the system [3]. Offline evaluation can also be used to test the relevance-versus-computation tradeoff in candidate retrieval [4].
+
+Evidence paths:
+[1] wiki/Machine Learning/Recommender Systems.md — Recommender Systems
+[2] raw/Unsupervised Learning.md — Week 2 - Recommender systems
+[3] raw/Unsupervised Learning.md — Week 2 - Recommender systems
+[4] wiki/Machine Learning/Recommender Systems.md — Related Notes
+
+[10.31s]
+Saved: /Users/hieunguyen/Documents/Codex/2026-09-26/help-me-build-assignment-4-for/.wiki-data/runs/20260927T020634Z-ask.json
+       10.57 real         4.86 user         2.33 sys
+          1873084416  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              238102  page reclaims
+                2525  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                3886  voluntary context switches
+               37797  involuntary context switches
+         40150697513  instructions retired
+         15698164078  cycles elapsed
+          3829391296  peak memory footprint
+
+== Ask 3: product leadership archetypes ==
+The distinction between an Operator and a Craftsperson in product leadership lies in their core strengths and areas of focus [1].
+
+*   **Operator:** This archetype is characterized by strengths in scaling teams, aligning organizations, removing execution barriers, and creating operational clarity [1].
+*   **Craftsperson:** This archetype is strong in product definition, customer insight, user experience, strategy, and mentoring product managers [1].
+
+A person combining these archetypes would be skilled at both executing efficiently within an organization (Operator) and ensuring the product itself is well-crafted and user-centric (Craftsperson) [5]. For example, such a leader might streamline team processes while also diving into user research to refine the product’s user experience [5].
+
+Evidence paths:
+[1] wiki/AI and Product/Product Leadership Archetypes.md — Product Leadership Archetypes
+[2] wiki/AI and Product/AI-First Product Management.md — AI-First Product Management
+[3] raw/Types of Product Archetypes.md — Types of Product Archetypes
+[4] raw/Types of Product Archetypes.md — Conclusion
+[5] raw/Types of Product Archetypes.md — How Someone Can Be Both Operator and Craftsperson
+
+[9.70s]
+Saved: /Users/hieunguyen/Documents/Codex/2026-09-26/help-me-build-assignment-4-for/.wiki-data/runs/20260927T020644Z-ask.json
+        9.95 real         4.60 user         2.18 sys
+          2068054016  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              242452  page reclaims
+                 517  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                3459  voluntary context switches
+               34872  involuntary context switches
+         38320762132  instructions retired
+         15164887268  cycles elapsed
+          3935346880  peak memory footprint
+
+== Ask 4: unsupported question ==
+Insufficient evidence in the wiki.
+
+[0.00s]
+Saved: /Users/hieunguyen/Documents/Codex/2026-09-26/help-me-build-assignment-4-for/.wiki-data/runs/20260927T020644Z-ask.json
+        0.08 real         0.04 user         0.01 sys
+            23543808  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                2341  page reclaims
+                 283  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  54  voluntary context switches
+                 147  involuntary context switches
+           433840475  instructions retired
+           178478572  cycles elapsed
+            12944576  peak memory footprint
+
+== Chat and conversational follow-up ==
+Local scripted chat: tests/offline-chat.txt
+You: What can you help me with?
+Gemma: I can help you with a variety of things! I can assist with brainstorming, drafting writing, answering questions, organizing information, and anything else you need help with.
+
+What are you looking to do right now?
+[5.77s]
+
+Saved: /Users/hieunguyen/Documents/Codex/2026-09-26/help-me-build-assignment-4-for/.wiki-data/runs/20260927T020650Z-chat.json
+You: Write a two-sentence thank-you note to a mentor.
+Gemma: Here are a couple of options, depending on the tone you want:
+
+**Option 1 (Warm and Sincere):**
+
+> Thank you so much for taking the time to mentor me; your guidance has been incredibly valuable to my progress. I truly appreciate your support and insight.
+
+**Option 2 (More Professional):**
+
+> I wanted to express my sincere gratitude for your mentorship and the valuable advice you've shared with me. I feel much better equipped for the challenges ahead because of your guidance.
+
+Which one feels closer to what you're looking for, or would you like me to tweak either of those?
+[3.84s]
+
+Saved: /Users/hieunguyen/Documents/Codex/2026-09-26/help-me-build-assignment-4-for/.wiki-data/runs/20260927T020654Z-chat.json
+You: Make that shorter.
+Gemma: Here are two shorter options:
+
+**Option 1 (Very concise):**
+
+> Thank you for your mentorship; your guidance has been incredibly valuable to me. I truly appreciate your support.
+
+**Option 2 (Focus on impact):**
+
+> I am so grateful for your mentorship and the valuable insights you've shared. Thank you for believing in me.
+
+Do either of those work, or should I try a different approach?
+[2.88s]
+
+Saved: /Users/hieunguyen/Documents/Codex/2026-09-26/help-me-build-assignment-4-for/.wiki-data/runs/20260927T020657Z-chat.json
+       12.72 real         6.39 user         2.73 sys
+          2055323648  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              240093  page reclaims
+                 983  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                3423  voluntary context switches
+               48401  involuntary context switches
+         44777802461  instructions retired
+         17883611789  cycles elapsed
+          3574587136  peak memory footprint
+
+== Memory after ==
+System-wide memory free percentage: 32%
+Completed: 2026-09-27T02:06:57Z
+Transcript: /Users/hieunguyen/Documents/Codex/2026-09-26/help-me-build-assignment-4-for/evidence/final-offline-terminal.txt

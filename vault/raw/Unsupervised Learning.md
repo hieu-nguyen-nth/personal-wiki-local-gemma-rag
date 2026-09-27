@@ -1,0 +1,212 @@
+# Week 1 - Unsupervised Learning
+- Clustering
+	- What is clustering
+		- clustering algorithm looks at a number of data points and automatically finds data points that are related or similar to each other.
+		- applications of clustering
+			- grouping similar news
+			- market segmentation
+			- analysis - dna, astronomical
+	- k-means intuition & algorithm 
+		- most commonly used algorithm for clustering
+		- step 1: find randomly x points as the center of a cluster, assign each point it its closet centroid
+				-  K-means will repeatedly do two different things: assign points to cluster centroids and move cluster centroids
+				- check each point about distant which center is the smallest
+			- step 2: recompute the centroid:
+				- look all the points, take average of them -> new centroid, then move the centroid
+			- ![[Pasted image 20250423223103.png]]
+			- take it and repeat these 2 steps until converge result (no change in centroid)
+	- Optimization objectives - cost function of total between cluster item and centroid
+		- ![[Pasted image 20250423223643.png]]![[Screenshot 2025-04-23 at 22.38.54.png]]
+		- initializing k-means
+	- initializing k-means
+		- steps
+			- choose K < m (cluster < training example)
+			- randomly pick k training example
+			- Set u1. u2 equal to these K example as the starting point
+		- with different initialization -> may end at local minimum
+			-  if you want to give k means multiple shots at finding the best local optimum. If you want to try multiple random initialization, so give it a better chance of finding  good clustering![[Pasted image 20250423225358.png]]
+			- compute the cost function and pick the cluster that gave the lowest cost![[Pasted image 20250425213625.png]]
+	- choosing the number of clusters
+		- one option: elbow methods
+			- run k means with a variety of k and plot the cost function , however for many applications, the right k is often ambiguous
+			- ![[Pasted image 20250425220326.png]]
+		- often , you wan to get clusters for some later (downstream) purpose, then evaluate k-means based on how well it performs on that later purpose to decide on what makes then
+			- ![[Pasted image 20250425220504.png]]
+- Anomaly detection
+	- Anomaly detection
+		- algorithms look at an unlabeled dataset of normal events and thereby learns to detect or to raise a red flag for if there is an unusual or an anomalous event.
+		- Common: anomaly detection is through a technique called density estimation, if the probability is too low -> anomaly 
+			- ![[Pasted image 20250425230053.png]]
+		- examples of Application:
+			- fraud detection  (eg fake accounts, financial use case) with x(i) are features of user is' activities
+			- manufacturing with c(i) are features of product i
+			- monitor computers in a data center
+				- ![[Pasted image 20250425230340.png]]
+	- Gaussian (normal) distribution
+		- In order to apply anomaly detection, we're going to need to use the Gaussian distribution
+		- If the probability of x is given by a Gaussian or normal distribution with mean parameter Mu, and with variance Sigma squared -> bell shaped
+			- ![[Pasted image 20250425231022.png]]
+		- parameter estimation (mu and standard deviation), with mu is the average of all training example, estimate Sigma squared will be the average of the squared difference between two examples, and that Mu that you just estimated
+	- Anomaly detection algorithm
+		- density estimation
+			- a training set x1 through xm, where here each example x has n features. So, each example x is a vector with n numbers
+			- need to build a model or estimate the probability for p(x), and need  parameters for each feature
+				- ![[Pasted image 20250425232252.png]]
+			- Anomaly detection algorithm
+				- Choose n features xi that you think my be indicative of anomalous examples
+				- Fit parameters Mu and Sigma squared
+				- given new example x, compute p(x)
+				- detect anomaly compare with epsilon 
+					- ![[Pasted image 20250425232535.png]]
+				- If you were to actually multiply p(x) 1 and p(x) 2, then you end up with this three D surface plot for p(x) where any point, the height of this is the product of p(x) 1 times p(x) 2. For the corresponding values of x 1 and x 2.
+	- Developing and evaluating an anomaly detection system
+		- the importance of real-number evaluation: When developing a learning algorithm, say choosing different features or trying different values of the parameters like epsilon, making decisions on changes is much easier if you have a way of evaluating the learning algorithm.
+		- the process of developing and evaluating the performance of an anomaly detection system -> how do you choose the parameter epsilon? And how do you know if your anomaly detection system is working well in the next video
+				![[Pasted image 20250425234220.png]]
+			-  example with set of anomalous (small number)
+				- ![[Pasted image 20250425234453.png]]
+		- Algorithm evaluation
+			- fit a model p(x) on training set
+			- on a cross validation/test example x, predict
+			- also consider possible evaluation metrics
+				- ![[Pasted image 20250425234902.png]]
+		- the practical process of building an anomaly detection system is much easier if you actually have just a small number of labeled examples of known anomalies
+	- Anomaly detection vs supervised learning
+		- compare between options and what to use, with a focus on the use cases and differences to try on, even with a small number of positive examples can do both
+			- anomaly: different way that a thing may go wrong
+			- supervised: expect that the pattern will repeat ![[Screenshot 2025-04-26 at 18.20.00.png]]
+				![[Pasted image 20250426182057.png]]
+	- Choosing what features to use
+		- anomaly detection algorithm: choosing a good choice of features = really important.
+			- In supervised learning, if you don't have the features quite right -> not a problem because the algorithm has enough labels to figure out what features ignore, or how to re scale feature and to take the best advantage of the features you do give it.
+		- something you can do
+			- detect non-gaussian feature by plotting histogram
+			- transform non-gaussian features to gaussian features (eg log or exponent, roots)
+				- remember: what kind of transformation you use in the training set should also be applied in the cross validation and test set
+			- error analysis for anomaly detection, also look at things that failed to be detected, may use new feature to support![[Pasted image 20250426183233.png]]
+			- ![[Pasted image 20250426183442.png]]
+# Week 2 - Recommender systems
+- Collaborative filtering
+	- making recommendations
+		- sample of managing data for movie rating ![[Screenshot 2025-04-27 at 23.01.57.png]]
+	- using per-items features
+		- follow up with rating, take more steps when you have more features about the items (eg in example, 2 features)
+			- fitting different linear regression for each user![[Screenshot 2025-04-27 at 23.12.08.png]]
+			- cost function - similar to linear, but only for movies that user have already rating r(i,j) = 1, ![[Pasted image 20250427231528.png]]
+				- and scale for all user  ![[Pasted image 20250427231655.png]]
+	- collaborative filtering algorithm
+		- if you have the parameters for all four users here, and if you have four ratings in this example that you want to try to match, you can take a reasonable guess at what lists a feature vector x_1 for movie one that would make good predictions for these four ratings up on top ![[Pasted image 20250427232425.png]]
+		- Cost function for learning the value of x1 and x2 for all the movies -> minimize the cost function will allow to take good guess on features of the movie![[Pasted image 20250427232737.png]]
+		- collaborative filtering ![[Pasted image 20250427233025.png]]
+		- gradient descent to minimize (using collaborative filter so it'll have x) ![[Pasted image 20250427233151.png]]
+		- To address some of the limitations of content-based filtering, collaborative filtering uses _similarities between users and items simultaneously_ to provide recommendations. This allows for serendipitous recommendations; that is, collaborative filtering models can recommend an item to user A based on the interests of a similar user B. Furthermore, the embeddings can be learned automatically, without relying on hand-engineering of features.
+	- binary labels, favs, likes, clicks - linear to logistics
+		- use case of binary filter, not guesting values ![[Pasted image 20250427233827.png]]
+		- Details of models ![[Pasted image 20250427234030.png]] ![[Pasted image 20250427234253.png]]
+- Recommender systems implementation detail
+	- mean normalization
+		- mean normalization - you normalize the movie ratings (or the value used for prediction) to have a consistent average value
+		- steps
+			- calculate the mean (normalize the row as in example - new user, or can also normalize the column - new movie - nếu guess dòng thì normalize cột và ngược lại), then substract from original ![[Pasted image 20250504142859.png]]
+			- for usr j movie i predict by using formular and also include the average (muy - subtract previously) ![[Pasted image 20250504143026.png]]
+			- 
+	- tensorflow implementation of collaborative filtering
+			- pretty technical in terms of implementation, but the idea is that tensorflow can automatically calculate derivative of cost function without calculus knowledge - auto diff ![[Pasted image 20250504143558.png]]![[Pasted image 20250504144410.png]]
+	- finding related items
+		- find the item with similar feature ![[Pasted image 20250504144818.png]]
+		- limitations of collaborative filtering
+			- cold star problem, eg how to
+				- rank new items that few users have rated
+				- show something reasonable to new users who have rated few items
+			- use side information about items or users
+				- item: genre, movie stars, studio,..
+				- user: demographics (age, gender, location,..), expressed preferences
+- Content-based filtering
+	- collaborative filtering vs content-based filtering
+		- collaborative filtering, the general approach is that we would recommend items to you based on ratings of users who gave similar ratings as you.
+		- content-based filtering: recommend items to you based on features of users and items to find a good match ![[Pasted image 20250504150946.png]]
+		- learning to match and calculate based on features -> compute these vectors, v_u for the users and v_m for the items over the movies, and then take dot products between them to try to find good matches. ![[Pasted image 20250504151359.png]]
+	- deep learning for content-based filtering
+		- network architecture as follow with cost function and optimization to fine-tune th emodel ![[Pasted image 20250504151930.png]] ![[Pasted image 20250504151739.png]]
+		- not only for joint prediction, movies and users can also be used independently to find similar thing, and performance can be optimized by pre-computed ![[Pasted image 20250504152227.png]]
+	- recommending from a large catalogue - to scale
+		- two steps which are called the retrieval and ranking steps
+			- the retrieval step (focus on coverage) will generate a large list of plausible item candidates. That tries to cover a lot of possible things you might recommend to the user and it's okay during the retrieval step. If you include a lot of items that the user is not likely to like, remember removing duplicates or no value items 
+			- during the ranking step will fine tune and pick the best items to recommend to the user,![[Pasted image 20250504153007.png]]
+		- Special notes for retrieval: how many items to consider?
+			- During the retrieval step, retrieving more items will tend to result in better performance. But the algorithm will end up being slower ->  recommend carrying out offline experiments to see how much retrieving additional items results in more relevant recommendations. ![[Pasted image 20250504153242.png]]
+	- ethical use of recommender systems
+		- need to choose the goal of the rec system, some are helpful, some (eg last 3) are not![[Pasted image 20250504153521.png]]
+	- TensorFlow implementation of content-based filtering![[Pasted image 20250504154533.png]]
+- Principal Component Analysis (optional, may not go) - **to check later**
+	- Reducing the number of features to visualize it
+		- to find one or more new axes, such as z so that when you measure your datas coordinates on the new axis, you end up still with very useful information
+# Week 3 - Reinforcement Learning
+- Reinforcement learning introduction
+	- what is RL
+		- state = ==represents the situation or condition the agent is in at a given time==. It's the information the agent uses to make decisions and interact with the environment.
+			- eg we call the position and orientation and speed and so on of the helicopter the state s.
+		- supervised learning doesn't work well because it's hard to have a wide set of data of an ideal action a for a state x -> use reinforcement learning
+		- key input to a reinforcement learning is the reward function which tells the 'subject' when it's doing well and when it's doing poorly. ![[Pasted image 20250504164846.png]]
+			- particularly, you have to tell it what to do rather than how to do it. And specifying the reward function rather than the optimal action gives you a lot more flexibility in how you design the system -> it's the job of the algorithm to automatically figure out how to choose good actions
+		- applications
+			- controlling robots
+			- factory optimization
+			- financial stock trading
+			- playing games
+	- Mars rover example
+		- the robot is in some **state**, S, and it gets to choose an **action**, and it also enjoys some **rewards**, R of S that it gets from that state. As a result of this action, it to some new state S prime. ![[Pasted image 20250504165853.png]]
+	- The return in RL
+		- The concept of a **return** captures that rewards you can get quicker are maybe more attractive than rewards that take you a long time to get to
+		- **the approach: discount factor** (not just taking the average of return / steps, gamma, look likes y)
+			- the discount factor Gamma does is it has the effect of making the PL algorithm a little bit impatient ![[Pasted image 20250504170432.png]]
+			- normal discount factor usually close to 1 eg 0.99
+			- similar concept in finance: interest rate or the time value of money
+			- example of return, which depends on action, vd từ step 4 đi về phía 6 sẽ có là 0 + 0.5x0 + (0.5)^2 x 40 = 10, vậy  nên điền 10 vào ô 4  ![[Pasted image 20250504170915.png]]
+			- For systems with negative rewards, it causes the algorithm to try to push out the make the rewards as far into the future as possible
+	- Making decision: policies in RL
+		- our goal is to come up with a function which is called a **policy** Pi, whose job it is to take as input any state s and map it to some action a that it wants us to take ![[Pasted image 20250504171300.png]]
+		- The goal of reinforcement learning is to find a policy Pi or Pi of S that tells you what action to take in every state so as to maximize the return.
+	- Review of key concepts
+		- Markov decision process (MDP) -> all following key terms and process - future state depends on current state![[Pasted image 20250504171734.png]]
+- State-action value function
+	- sate-action value function definition
+		- Optimal Q function, or Q* or Q(s,a) = state action value function, return if you
+			- start in state s
+			- take action a (once)
+			- then behave optimally after that
+		- sample of calculation ![[Pasted image 20250504174823.png]]
+		- picking actions (tbh confuse with 2 end but anw reasonable) if we have the ability to calculate for every state ![[Pasted image 20250504175153.png]]
+	- state-action value function example (jupyter lab implementation)
+		- ![[Pasted image 20250504175446.png]]
+	- bellman equation
+		- concept of bellman equation ![[Pasted image 20250504180523.png]]
+		- example of calculation  and explanation  ![[Pasted image 20250504180740.png]] - concept need to be applied for proper result ![[Pasted image 20250504184229.png]]
+	- Random stochastic environment (optional)
+- Continuous state spaces
+	- example of continuous state space applications
+		- discrete vs continuous 
+			- discrete - limited position
+			- continuous - any where in a list of large number of state, eg vertical transportation, etc, and it can include multiple values of each features of the current state (vector) ![[Pasted image 20250504184801.png]] eg in helicopter, state includes x position in the say, north-south direction, u positioned in the east-west direction, z is height above ground, and also the row, the pitch, and also that yaw of helicopter, the speed etc
+	- lunar lander
+		- example of lunar lander with multiple action to consider  ![[Pasted image 20250504195724.png]]sample of complex reward function, also encode action with 1-hot feature vector ![[Pasted image 20250504195756.png]] ![[Pasted image 20250504195929.png]]
+	- learning the state-value function
+		- The heart of the learning algorithm is we're going to train a neural network that inputs the current state and the current action and computes or approximates Q of s, a ![[Pasted image 20250504200258.png]]
+			- if you can train a neural network with appropriate choices of parameters in the hidden layers and in the upper layer to give you a good estimates of Q of s, a, then whenever you're Lunar Lander is in some state s, you can then use the neural network to compute Q of s, a for all 4 action
+		- Approach for training: use Bellman's equations to create  training set with lots of examples, x and y, and then we'll use supervised learning as example in the neural network use case
+			- Bellman Equation implementation: take random and multiple example, try out different things etc. if you don't know what's the Q function is, make it random guess ![[Pasted image 20250504201056.png]]
+		- The learning Algorithm as follow with multiple repeat to train the Q function, until better and better result ![[Pasted image 20250504201411.png]]
+	- algorithm refinement: improved neural network architecture
+		- Most implementations of DQN use more efficient architecture
+			- old approach: . Whenever we are in some state s, we would have to carry out inference in the neural network separately four times for 4 values to compute and pick the action a that gives us the largest Q value
+			- new approach: it's more efficient to train a single neural network to output all four of these values simultaneously ![[Pasted image 20250504201905.png]]
+	- Algorithm refinement: epsilon-greedy policy
+		- pick random actions -> takes time, and while we're greedy -> to choose actions while still learning there are options as follow, and the more optional option is option 2 (including 0.05 of taking exploration steps, and epsilon greedy policy to enable exploration a bit - with 0.95 = greedy, 0.05 exploration = epsilon)
+			- ![[Pasted image 20250504202528.png]]
+			- strategy: start with high epsilon and gradually decrease -> use the code in the jupyter lab to explore
+	- algorithm refinement: mini-batch and soft updates (optional) - additional refinement to keep the algorithm run faster
+	- the state of RL
+		- limitation of reinforcement learning
+			- much easier to work in a simulation than a real robot
+			- far fewer applications than supervised / unsupervised learning, but exiting research direction with potential future application
+- Conversation: AI and robotics
