@@ -1,0 +1,15 @@
+Here is the revised answer based on your notes, with citations:
+
+K-means alternates two operations: assigning each example to its nearest centroid and moving each centroid to the mean of its assigned examples [2].
+
+The process involves these steps:
+
+1.  **Assign points to cluster centroids:** Assign each data point to its nearest centroid.
+2.  **Recompute the centroid:** Recompute the centroid by taking the average of all the points assigned to it [1].
+
+This process is repeated until it converges (no change in the centroid) [1].
+
+**Suggestion:** Different initial centroids can produce different local optima, so the source recommends repeated random initialization and selecting the run with the lowest cost [2].
+
+[14.35s]
+Saved: /Users/hieunguyen/Documents/Codex/2026-09-26/help-me-build-assignment-4-for/.wiki-data/runs/20260927T031548665089Z-chat.json

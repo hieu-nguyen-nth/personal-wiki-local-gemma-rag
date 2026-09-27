@@ -53,3 +53,18 @@ Gemma responded:
 Response time: **2.43 seconds**.
 
 Assessment: pass for conversation context and shortening. The second reply clearly refers to and shortens the prior draft, and neither turn requires wiki evidence. Observed model-quality limitation: “I feel much better for your support” is understandable but unnatural English, and the first turn still offered two options despite the one-draft instruction. A concrete future improvement would be a small writing-specific prompt plus a final grammar/conciseness check before display.
+
+## Wiki-backed citation check
+
+- Execution: local and offline
+- Question: What do my notes say about how K-means updates centroids?
+- Response time: **14.35 seconds**
+- Raw output: [chat-wiki-citation-terminal.txt](chat-wiki-citation-terminal.txt)
+
+The final answer cited the retrieved evidence when describing centroid assignment, mean updates, convergence, and repeated initialization. It used citations `[1]` and `[2]`, both of which referred to retrieved K-means passages.
+
+The answer also labeled the repeated-initialization recommendation as a suggestion. It did not present unsupported personal facts.
+
+### Failure and fix
+
+The first attempt returned no passages because conversational words such as “what do my notes say about” increased the retrieval-overlap requirement. The harness was updated to remove common personal-wiki request wrappers before searching. An automated test now verifies conversational query cleanup and citation repair when a wiki-backed chat answer initially omits citations.

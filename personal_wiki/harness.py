@@ -66,6 +66,33 @@ class WikiHarness:
         )
         return any(cue in lowered for cue in cues)
 
+    @staticmethod
+    def _chat_retrieval_query(message: str) -> str:
+        query = message
+        wrappers = (
+            "what do my notes say about",
+            "what does my wiki say about",
+            "what did i write about",
+            "according to my notes",
+            "based on my notes",
+            "from my notes",
+            "in my notes",
+            "my notes",
+            "my wiki",
+            "personal wiki",
+            "what did i write",
+        )
+        for wrapper in wrappers:
+            query = re.sub(re.escape(wrapper), " ", query, flags=re.IGNORECASE)
+        query = re.sub(r"\s+", " ", query).strip(" ?.,")
+        return query or message
+
+    @staticmethod
+    def _citations_are_valid(answer: str, passage_count: int) -> bool:
+        cited = {int(value) for value in CITATION_RE.findall(answer)}
+        valid = set(range(1, passage_count + 1))
+        return bool(cited) and cited.issubset(valid)
+
     def ask(self, question: str) -> RunResult:
         started = time.perf_counter()
         passages = self.raw_search(question)
@@ -91,7 +118,8 @@ class WikiHarness:
     def chat(self, message: str, *, use_wiki: bool = False) -> RunResult:
         started = time.perf_counter()
         lookup = use_wiki or self._chat_needs_wiki(message)
-        passages = self.raw_search(message, 3) if lookup else []
+        retrieval_query = self._chat_retrieval_query(message)
+        passages = self.raw_search(retrieval_query, 3) if lookup else []
         user_content = message
         if passages:
             evidence = format_evidence(passages, self.config.max_context_chars // 2)
@@ -106,6 +134,27 @@ class WikiHarness:
             max_tokens=self.config.chat_max_tokens,
             temperature=0.75,
         )
+        if passages and not self._citations_are_valid(answer, len(passages)):
+            correction = (
+                "Revise your previous answer. Cite every factual claim drawn from "
+                "the personal-wiki evidence using valid passage numbers such as [1]. "
+                "Keep suggestions clearly labeled and do not invent personal facts."
+            )
+            answer = self.model.generate(
+                [
+                    *messages,
+                    {"role": "assistant", "content": answer},
+                    {"role": "user", "content": correction},
+                ],
+                max_tokens=self.config.chat_max_tokens,
+                temperature=0.2,
+            )
+            if not self._citations_are_valid(answer, len(passages)):
+                answer = (
+                    "I could not produce a reliably cited answer from the retrieved "
+                    "personal-wiki passages. Please use ask mode for an evidence-only answer."
+                )
+
         self.chat_history.extend([
             {"role": "user", "content": message},
             {"role": "assistant", "content": answer},

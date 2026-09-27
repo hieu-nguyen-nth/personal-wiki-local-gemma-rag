@@ -97,6 +97,12 @@ class RetrievalTests(unittest.TestCase):
     def test_chat_retrieval_is_selective(self):
         self.assertFalse(WikiHarness._chat_needs_wiki("Draft a short thank-you email."))
         self.assertTrue(WikiHarness._chat_needs_wiki("What do my notes say about K-means?"))
+        self.assertEqual(
+            WikiHarness._chat_retrieval_query(
+                "What do my notes say about how K-means updates centroids?"
+            ),
+            "how K-means updates centroids",
+        )
 
     def test_saved_runs_have_unique_names(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -112,5 +118,41 @@ class RetrievalTests(unittest.TestCase):
 
 
 
+    def test_wiki_backed_chat_retries_when_citations_are_missing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            prompts = root / "prompts"
+            prompts.mkdir()
+            (prompts / "assistant.md").write_text(
+                "Cite factual claims from wiki evidence.", encoding="utf-8"
+            )
+            (prompts / "research.md").write_text("Research rules.", encoding="utf-8")
+            note = root / "Evidence.md"
+            note.write_text(
+                "# Evidence\n\nK-means updates centroids using the assigned-point mean.",
+                encoding="utf-8",
+            )
+            config = Config(root, root, root, root / "data")
+            ingest(note, config.database)
+            harness = WikiHarness(config)
+
+            responses = iter([
+                "K-means updates centroids using the assigned-point mean.",
+                "K-means updates centroids using the assigned-point mean [1].",
+            ])
+            calls = []
+
+            def fake_generate(messages, **kwargs):
+                calls.append(messages)
+                return next(responses)
+
+            harness.model.generate = fake_generate
+            result = harness.chat(
+                "What do my notes say about K-means centroids?"
+            )
+
+            self.assertEqual(len(calls), 2)
+            self.assertEqual(len(result.passages), 1)
+            self.assertIn("[1]", result.answer)
 if __name__ == "__main__":
     unittest.main()
