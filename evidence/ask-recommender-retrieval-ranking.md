@@ -3,59 +3,45 @@
 ## Test definition
 
 - Mode: `ask`
-- Execution: local
+- Execution: local and offline
+- Run date: 2026-09-27
 - Model: Gemma 4 E2B IT Text int4 through MLX-VLM
 - Question: What roles do retrieval and ranking play in a recommender system?
 - Expected evidence: `raw/Unsupervised Learning.md`, Week 2 — Recommender systems; reviewed page `wiki/Machine Learning/Recommender Systems.md`
 
 ## Actual answer
 
-Retrieval and ranking are two steps in a production recommender system [1][4]. Retrieval is the initial step that gathers a large list of plausible item candidates [3]. The goal of retrieval is to cover a wide range of possible recommendations for the user [3].
+Retrieval and ranking are two steps in a production recommender system [1][3]. Retrieval is the step that gathers a large list of plausible item candidates [2]. The goal of retrieval is to focus on coverage, generating a large list of possible recommendations for the user [2].
 
-Ranking follows the retrieval step, where the system fine-tunes and selects the best items from the retrieved list to recommend to the user [3]. The choice of how many items to retrieve can be tested through offline experiments to determine how additional retrieval results affect the relevance of the recommendations [3]. This two-step process is used when recommending from a large catalog to scale the system [4].
+Ranking follows the retrieval step, where the system fine-tunes and selects the best items from the retrieved candidates to recommend to the user [2]. The trade-off between retrieval and ranking is that retrieving more candidates can improve relevance, but it increases computation, so this tradeoff should be tested [1].
 
-## Evidence paths reported by the CLI
+In the context of content-based filtering, which involves calculating vectors for users and items to find matches, the process is often described as two steps: retrieval and ranking, especially when recommending from a large catalog to scale the system [3]. Offline evaluation can also be used to test the relevance-versus-computation tradeoff in candidate retrieval [4].
 
-1. `wiki/Machine Learning/Recommender Systems.md` — Recommender Systems
-2. `index.md` — Machine Learning
-3. `raw/Unsupervised Learning.md` — Week 2 - Recommender systems
-4. `raw/Unsupervised Learning.md` — Week 2 - Recommender systems
-5. `index.md` — Source Catalog
+## Retrieved passages
 
-## Measurement
+[1] wiki/Machine Learning/Recommender Systems.md — Recommender Systems
+The source material contrasts collaborative and content-based recommendation. Collaborative filtering learns user and item representations from observed ratings. Mean normalization helps handle users or items with sparse ratings.
 
-- Response time reported by the CLI: **18.99 seconds**
-- Memory measurement: pending final offline run
+Content-based filtering uses user and item features, maps them to representation vectors, and scores a match using their similarity. A production recommender commonly separates retrieval from ranking: retrieval gathers plausible candidates, while ranking orders those candidates. Retrieving more candidates can improve relevance but increases computation, so the tradeoff should be tested.
 
-## Assessment
+[2] raw/Unsupervised Learning.md — Week 2 - Recommender systems
+- the retrieval step (focus on coverage) will generate a large list of plausible item candidates. That tries to cover a lot of possible things you might recommend to the user and it's okay during the retrieval step. If you include a lot of items that the user is not likely to like, remember removing duplicates or no value items 			- during the ranking step will fine tune and pick the best items to recommend to the user,[attachment: Pasted image 20250504153007.png] 		- Special notes for retrieval: how many items to consider? - During the retrieval step, retrieving more items will tend to result in better performance. But the algorithm will end up being slower ->  recommend carrying out offline experiments to see how much retrieving additional items results in more relevant recommendations. [attachment: Pasted image 20250504153242.png] 	- ethical use of recommender systems 		- need to choose the goal of the rec system, some are helpful, some (eg last 3) are not[attachment: Pasted image 20250504153521.png] 	- TensorFlow implementation of content-based filtering[attachment: Pasted image 20250504154533.png] - Principal Component Analysis (optional, may not go) - **to check later** 	- Reducing the number of features to visualize it 		- to find one or more new axes, such as z so that when you measure your datas coordinates on the new axis, you end up still with very useful information
 
-Pass. The answer correctly describes retrieval as candidate generation and ranking as selection/ordering. Citations `[1]`, `[3]`, and `[4]` point to the reviewed recommender page and the original course-note section containing those claims. The result does not rely on chat history or uncited general knowledge for its material claims.
+[3] raw/Unsupervised Learning.md — Week 2 - Recommender systems
+- limitations of collaborative filtering 			- cold star problem, eg how to 				- rank new items that few users have rated 				- show something reasonable to new users who have rated few items 			- use side information about items or users 				- item: genre, movie stars, studio,.. - user: demographics (age, gender, location,..), expressed preferences - Content-based filtering 	- collaborative filtering vs content-based filtering 		- collaborative filtering, the general approach is that we would recommend items to you based on ratings of users who gave similar ratings as you. - content-based filtering: recommend items to you based on features of users and items to find a good match [attachment: Pasted image 20250504150946.png] 		- learning to match and calculate based on features -> compute these vectors, v_u for the users and v_m for the items over the movies, and then take dot products between them to try to find good matches. [attachment: Pasted image 20250504151359.png] 	- deep learning for content-based filtering 		- network architecture as follow with cost function and optimization to fine-tune th emodel [attachment: Pasted image 20250504151930.png] [attachment: Pasted image 20250504151739.png] 		- not only for joint prediction, movies and users can also be used independently to find similar thing, and performance can be optimized by pre-computed [attachment: Pasted image 20250504152227.png] 	- recommending from a large catalogue - to scale 		- two steps which are called the retrieval and ranking steps
 
-Observed retrieval limitation: `index.md` appeared as results `[2]` and `[5]` even though the underlying reviewed and raw notes were stronger evidence. A future improvement is to down-rank navigation-only pages or label them as non-evidence.
+[4] wiki/Machine Learning/Recommender Systems.md — Related Notes
+- Machine Learning Evaluation — offline evaluation can test the relevance-versus-computation tradeoff in candidate retrieval.
 
-## Fix and rerun
+## Measurement and assessment
 
-The retrieval rules were changed so navigation-only `index.md` is never treated as factual evidence. Search mode was also restricted to unchanged originals under `raw/`; ask mode may use both `raw/` evidence and reviewed `wiki/` pages.
+- Response time: **10.96 seconds**
+- Assessment: **Pass.**
+- Citations `[1]`, `[2]`, and `[3]` support the explanation that retrieval gathers plausible candidates, ranking selects and orders the best candidates, and the two-stage design helps recommendation systems scale to large catalogs.
+- Citation `[4]` supports using offline evaluation to examine the relevance-versus-computation tradeoff.
+- Retrieved passages that were not cited were not used as factual support.
+- The answer was generated during the final offline run after Wi-Fi was disabled and the CLI was restarted.
 
-### Actual rerun answer
+## Earlier failure and fix
 
-The Terminal emitted literal escaped Markdown markers (`\*` and `\*\*`) around the two bullets. They are normalized below for readability; the wording and citations are unchanged.
-
-Retrieval and ranking are two steps in a production recommender system [1][3].
-
-- **Retrieval:** This step focuses on coverage and generates a large list of plausible item candidates [2]. The goal is to cover many possible recommendations for the user, and including more items during retrieval tends to result in better performance [2]. However, retrieving more items increases computation, so this trade-off should be tested [1].
-- **Ranking:** This step refines the list created by retrieval, ordering the candidates to select the best items to recommend to the user [1][2].
-
-In summary, retrieval gathers plausible candidates, and ranking orders those candidates [1]. This two-step process is used when recommending from a large catalog to scale the system [3].
-
-### Rerun evidence paths
-
-1. `wiki/Machine Learning/Recommender Systems.md` — Recommender Systems
-2. `raw/Unsupervised Learning.md` — Week 2 - Recommender systems
-3. `raw/Unsupervised Learning.md` — Week 2 - Recommender systems
-4. `wiki/Machine Learning/Recommender Systems.md` — Sources
-5. `raw/Unsupervised Learning.md` — Week 2 - Recommender systems
-
-### Rerun assessment
-
-Pass. No navigation page appears in the evidence. The claims about candidate coverage, ranking, computation trade-offs, and large-catalog scaling are supported by citations `[1]`, `[2]`, and `[3]`. Response time was **11.71 seconds**. This is recorded as an observed warm rerun, not proof that the code change alone caused the speed difference.
+An earlier run retrieved navigation-only content from `index.md`. Retrieval was changed so `index.md` is excluded from factual evidence and search mode is restricted to original files under `vault/raw/`. The final offline run shown above no longer includes `index.md`.

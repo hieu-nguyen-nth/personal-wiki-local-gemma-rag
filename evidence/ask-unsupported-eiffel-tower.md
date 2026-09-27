@@ -3,9 +3,16 @@
 ## Test definition
 
 - Mode: `ask`
-- Execution: local
+- Execution: local and offline
+- Run date: 2026-09-27
+- Model: `mlx-community/Gemma4-E2B-IT-Text-int4`
+- Runtime: MLX-VLM 0.7.2
 - Question: When was the Eiffel Tower completed?
 - Expected behavior: no relevant retrieved evidence and an explicit insufficient-evidence response
+
+## Retrieved passages
+
+None. Retrieval found no passages meeting the relevance threshold.
 
 ## Actual response
 
@@ -14,5 +21,7 @@
 ## Measurement and assessment
 
 - Response time: **0.00 seconds**
-- Retrieved passages: none
-- Assessment: pass. The harness stopped before loading Gemma because retrieval found no relevant evidence. It did not answer from the model's general knowledge.
+- Assessment: **Pass.**
+- The harness stopped before loading Gemma because retrieval found no relevant evidence.
+- It did not answer from model knowledge or use unrelated passages.
+- This result was produced during the final offline run after Wi-Fi was disabled and the CLI was restarted.
