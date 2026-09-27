@@ -1,19 +1,28 @@
 # Final Offline Test Summary
 
-Source of truth: `final-offline-terminal.txt`, captured from the normal macOS Terminal on 2026-09-27. Wi-Fi was reported off before the script continued. No outputs below were invented or edited.
+Source of truth: [`final-offline-terminal.txt`](final-offline-terminal.txt), captured from the normal macOS Terminal on 2026-09-27. The script verified that Wi-Fi was off before continuing and enabled the Hugging Face and Transformers offline flags. No results below were invented or edited.
 
 | Check | Observed result |
 |---|---|
-| Fresh restart and help | CLI displayed all five modes. |
-| Fresh ingestion | 15 updated files, 88 chunks; 0.06 s wall time. |
-| Re-ingestion | 15 unchanged files, zero new chunks. |
-| Raw search | Three original passages from `raw/Unsupervised Learning.md`; no Gemma call. |
-| K-means ask | Evidence-supported response with `[1]` and `[2]`; 9.32 s. |
-| Recommender ask | Evidence-supported response with `[1]`, `[2]`, and `[3]`; 10.31 s. |
-| Product leadership ask | Evidence-supported response with citations; 9.70 s. |
-| Unsupported ask | Exact response: `Insufficient evidence in the wiki.`; 0.00 s. |
-| Chat | Casual capability answer, two-sentence mentor note, then a shorter revision using session context. |
+| Fresh restart and help | The CLI displayed `chat`, `ask`, `search`, `ingest`, and `help`. |
+| Fresh ingestion | 15 files indexed into 88 chunks; approximately 0.06 seconds wall time. |
+| Duplicate-safety re-ingestion | 15 unchanged files and zero new chunks. |
+| Raw search | Returned original passages from `raw/Unsupervised Learning.md` without loading Gemma. |
+| K-means ask | Grounded answer with citations; 12.68 seconds. |
+| Recommender ask | Grounded answer with citations; 10.96 seconds. |
+| Product-archetypes ask | Grounded answer with citations; 10.05 seconds. |
+| Unsupported ask | Returned exactly `Insufficient evidence in the wiki.` in 0.00 seconds. |
+| Three-turn chat | Capability explanation, mentor thank-you note, and a shorter follow-up using conversation context; 11.80 seconds total wall time. |
+| Wiki-backed cited chat | Retrieved K-means passages and cited factual claims with `[1]` and `[2]`; 14.35 seconds. |
 
-The highest observed model-command peak memory footprint was 3,935,346,880 bytes (about 3.67 GiB), during the product-leadership question. The highest maximum resident set size was 2,068,054,016 bytes (about 1.93 GiB). The full chat process took 12.72 seconds. System-wide free memory changed from 64% before the sequence to 32% afterward.
+The highest peak memory footprint during the four final ask tests was 3,940,638,272 bytes, approximately 3.67 GiB, during the product-archetypes question. The highest maximum resident set size was 1,833,074,688 bytes, approximately 1.71 GiB. The three-turn chat peaked at approximately 3.34 GiB.
 
-One saved JSON filename collision was exposed because two commands completed within the same second. The terminal transcript retained both outputs. The code now uses microsecond timestamps, and `test_saved_runs_have_unique_names` prevents regression.
+System-wide free memory changed from 41% before the final sequence to 31% afterward. All four ask commands created distinct microsecond-resolution saved-result filenames. Seven automated tests pass, including coverage for idempotent re-ingestion, stale-file removal, raw-only search, ask/chat separation, conversational retrieval-query cleanup, citation repair in wiki-backed chat, and collision-free saved outputs.
+
+The individual evidence cards contain the exact retrieved passages, answers, citations, measurements, and human assessments:
+
+- [K-means](ask-kmeans.md)
+- [Recommender retrieval and ranking](ask-recommender-retrieval-ranking.md)
+- [Product archetypes](ask-product-archetypes.md)
+- [Unsupported Eiffel Tower question](ask-unsupported-eiffel-tower.md)
+- [Chat and mode-boundary checks](chat-mode-check.md)

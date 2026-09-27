@@ -2,9 +2,19 @@
 
 This is an original Python CLI and harness, not a cloned sample app. It turns five public-safe source notes into a small Obsidian wiki and answers questions locally with a quantized Gemma model. Local mode is the default: retrieval, generation, citations, run logs, and the wiki all work without a cloud service.
 
+## Grading index
+
+- **Implementation:** [CLI](personal_wiki/cli.py), [harness](personal_wiki/harness.py), [retrieval](personal_wiki/retrieval.py), [local Gemma adapter](personal_wiki/model.py), and [wiki builder](personal_wiki/wiki_builder.py)
+- **Setup:** [setup script](setup.sh), [configuration](wiki_config.toml), and the commands below
+- **Personal wiki:** [vault index](vault/index.md), [original sources](vault/raw/), [reviewed wiki pages](vault/wiki/), and [generation manifest](vault/wiki_manifest.toml)
+- **Ask evaluations:** [K-means](evidence/ask-kmeans.md), [recommender retrieval and ranking](evidence/ask-recommender-retrieval-ranking.md), [product archetypes](evidence/ask-product-archetypes.md), and [unsupported Eiffel Tower question](evidence/ask-unsupported-eiffel-tower.md)
+- **Mode checks:** [chat evaluation](evidence/chat-mode-check.md), [wiki-backed chat citations](evidence/chat-wiki-citation-terminal.txt), and [wiki-generation evidence](evidence/ingestion-wiki-generation.md)
+- **Offline proof:** [final summary](evidence/final-offline-summary.md), [complete terminal transcript](evidence/final-offline-terminal.txt), [start screenshot showing Wi-Fi off](evidence/screenshots/final/offline-terminal-start.png), and [completion screenshot](evidence/screenshots/final/offline-terminal-completed.png)
+- **Obsidian proof:** [open note](evidence/screenshots/final/obsidian-open-note.png), [topic-organized index](evidence/screenshots/final/obsidian-index.png), and [wiki-only graph](evidence/screenshots/final/obsidian-graph-path-wiki.png)
+
 ## Device and model choice
 
-Test device: macOS Tahoe 26.6.2, Apple M1 MacBook Air, 8 GB unified memory, and 23.85 GB free disk space when setup began. The selected model is [`mlx-community/Gemma4-E2B-IT-Text-int4`](https://huggingface.co/mlx-community/Gemma4-E2B-IT-Text-int4), about 2.5 GB on disk, run through MLX-VLM 0.7.2.
+Test device: macOS Tahoe 26.6.2, Apple M1 MacBook Air, 8 GB unified memory, and 23.85 GB free disk space when setup began. System-wide memory was 41% free immediately before the final offline run and 31% free afterward. The selected checkpoint is [`mlx-community/Gemma4-E2B-IT-Text-int4`](https://huggingface.co/mlx-community/Gemma4-E2B-IT-Text-int4), a 2.67 GB int4 MLX conversion of Google's official [`google/gemma-4-E2B-it`](https://huggingface.co/google/gemma-4-E2B-it), run through MLX-VLM 0.7.2. The model family and available variants are documented in [Google's official Gemma documentation](https://ai.google.dev/gemma/docs/get_started).
 
 | Gemma option | Meaning | Decision for this Mac |
 |---|---|---|
@@ -46,6 +56,10 @@ Inside chat, `/wiki <question>` explicitly retrieves notes, `/reset` clears the 
 | Harness | `personal_wiki/harness.py` manages modes, chat context, prompts, model calls, timing, citation validation, errors, and optional JSON outputs. |
 | CLI | `personal_wiki/cli.py` exposes `chat`, `ask`, `search`, `ingest`, and `help`; `model.py` connects the harness to MLX-VLM. |
 
+### One command traced through the harness
+
+For `./launch.command ask "How does K-means update its centroids?" --save`, `launch.command` selects the project virtual environment and invokes `wiki.py`. `personal_wiki/cli.py` parses `ask`, loads the configuration, and creates `WikiHarness`. `WikiHarness.ask` starts a fresh request without chat history, calls the local retrieval tool, formats the numbered evidence within the context limit, loads the research-only prompt, and calls local Gemma through `model.py`. The harness validates that the answer contains only valid passage citation numbers, the CLI displays the answer and evidence paths, and `--save` records the question, passages, answer, timing, and citations outside the vault.
+
 Assistant instructions and research rules are deliberately separate in `prompts/assistant.md` and `prompts/research.md`. Retrieved notes are treated as untrusted evidence, not instructions. Chunks, hashes, SQLite data, and saved outputs remain outside the Obsidian vault in `.wiki-data/`.
 
 Retrieval uses Unicode tokenization, prefix matches, BM25 ranking, and a query-term overlap threshold. Markdown is split near 1,600 characters, `ask` retrieves five passages with a 12,000-character context ceiling, and generation is capped at 320 tokens. This simple local lexical design is transparent and fast, although semantic/hybrid retrieval would improve synonym handling.
@@ -64,26 +78,28 @@ Obsidian verification:
 
 ## Acceptance tests and real results
 
-Answerable `ask` questions:
+Final offline `ask` evidence:
 
-1. How does K-means update its centroids, and why should initialization be repeated?
-2. What roles do retrieval and ranking play in a recommender system?
-3. What distinguishes an Operator from a Craftsperson in product leadership?
+1. [K-means centroids and initialization](evidence/ask-kmeans.md)
+2. [Recommender retrieval and ranking](evidence/ask-recommender-retrieval-ranking.md)
+3. [Product leadership archetypes](evidence/ask-product-archetypes.md)
+4. [Unsupported Eiffel Tower question](evidence/ask-unsupported-eiffel-tower.md), which returned exactly `Insufficient evidence in the wiki.`
 
-Unsupported question: **When was the Eiffel Tower completed?** It returned exactly `Insufficient evidence in the wiki.`
+Each card contains the expected sources, exact retrieved passages, actual Gemma answer, citations, response time, and a human assessment of whether the cited passages support the claims.
 
-On 2026-09-27, Wi-Fi was turned off, the CLI was restarted, the index was rebuilt, all four questions ran, raw search ran, and chat plus a follow-up ran without cloud services or fallback. The complete unedited transcript is [evidence/final-offline-terminal.txt](evidence/final-offline-terminal.txt); the terminal completion screenshot is [here](evidence/screenshots/final/offline-terminal-completed.png).
+On 2026-09-27, Wi-Fi was turned off, the CLI was restarted, the index was rebuilt, all four questions ran, raw search ran, and chat plus a follow-up ran without cloud services or fallback. The complete unedited transcript is [evidence/final-offline-terminal.txt](evidence/final-offline-terminal.txt). The [start screenshot](evidence/screenshots/final/offline-terminal-start.png) shows the Wi-Fi-off check and fresh restart, while the [completion screenshot](evidence/screenshots/final/offline-terminal-completed.png) shows the completed run.
 
 | Offline check | Response time | Maximum resident set size | Peak memory footprint |
 |---|---:|---:|---:|
-| Fresh ingestion, 15 files / 88 chunks | 0.06 s wall time | 23.25 MiB | 13.09 MiB |
-| K-means `ask` | 9.32 s | 796.14 MiB | 3.56 GiB |
-| Recommender `ask` | 10.31 s | 1.74 GiB | 3.57 GiB |
-| Product archetypes `ask` | 9.70 s | 1.93 GiB | 3.67 GiB |
-| Unsupported `ask` | 0.00 s | 22.45 MiB | 12.34 MiB |
-| Three-turn chat, total | 12.72 s | 1.91 GiB | 3.33 GiB |
+| Fresh ingestion, 15 files / 88 chunks | 0.06 s wall time | 23.38 MiB | 13.22 MiB |
+| K-means `ask` | 12.68 s | 514.91 MiB | 3.42 GiB |
+| Recommender `ask` | 10.96 s | 1.55 GiB | 3.57 GiB |
+| Product archetypes `ask` | 10.05 s | 1.71 GiB | 3.67 GiB |
+| Unsupported `ask` | 0.00 s | 22.42 MiB | 12.31 MiB |
+| Three-turn chat, total | 11.80 s wall time | 1.61 GiB | 3.34 GiB |
+| Wiki-backed cited chat | 14.35 s | Not separately measured | Not separately measured |
 
-System-wide free memory was 64% before and 32% after the complete run. A second ingestion reported 15 unchanged files and zero new chunks. Six automated tests verify idempotent re-ingestion, stale-file removal, navigation exclusion, raw-only search, selective chat retrieval, separation of `ask` from chat history, and collision-free saved outputs.
+System-wide free memory was 41% before and 31% after the final offline sequence. A second ingestion reported 15 unchanged files and zero new chunks. Seven automated tests verify idempotent re-ingestion, stale-file removal, navigation exclusion, raw-only search, selective chat retrieval, conversational retrieval-query cleanup, citation repair in wiki-backed chat, separation of `ask` from chat history, and collision-free saved outputs.
 
 ```sh
 ./launch.command ingest
